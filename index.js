@@ -62,7 +62,6 @@ function getNextTransactionId() {
 // ==========================================
 
 function roundRect(ctx, x, y, width, height, radius) {
-
   ctx.beginPath();
 
   ctx.moveTo(x + radius, y);
@@ -122,16 +121,9 @@ function roundRect(ctx, x, y, width, height, radius) {
 // POLE NA GRAFICE
 // ==========================================
 
-function drawField(
-  ctx,
-  label,
-  value,
-  x,
-  y
-) {
+function drawField(ctx, label, value, x, y) {
 
   ctx.fillStyle = "#9299a8";
-
   ctx.font = "bold 19px Arial";
 
   ctx.fillText(
@@ -141,7 +133,6 @@ function drawField(
   );
 
   ctx.fillStyle = "#f5f7fa";
-
   ctx.font = "bold 29px Arial";
 
   let finalValue = String(value);
@@ -184,10 +175,7 @@ async function createTransactionImage({
   const ctx =
     canvas.getContext("2d");
 
-  // ========================================
   // TŁO
-  // ========================================
-
   ctx.fillStyle = "#0c0e14";
 
   ctx.fillRect(
@@ -197,10 +185,7 @@ async function createTransactionImage({
     800
   );
 
-  // ========================================
   // GŁÓWNA KARTA
-  // ========================================
-
   ctx.fillStyle = "#13161f";
 
   roundRect(
@@ -214,12 +199,8 @@ async function createTransactionImage({
 
   ctx.fill();
 
-  // ========================================
   // OBRAMOWANIE
-  // ========================================
-
   ctx.strokeStyle = "#ffc107";
-
   ctx.lineWidth = 3;
 
   roundRect(
@@ -233,14 +214,9 @@ async function createTransactionImage({
 
   ctx.stroke();
 
-  // ========================================
-  // LOGO / NAZWA
-  // ========================================
-
+  // LOGO
   ctx.fillStyle = "#ffc107";
-
-  ctx.font =
-    "bold 52px Arial";
+  ctx.font = "bold 52px Arial";
 
   ctx.fillText(
     "STARSHOP",
@@ -248,14 +224,9 @@ async function createTransactionImage({
     120
   );
 
-  // ========================================
   // NUMER
-  // ========================================
-
   ctx.fillStyle = "#f1f3f6";
-
-  ctx.font =
-    "bold 30px Arial";
+  ctx.font = "bold 30px Arial";
 
   ctx.fillText(
     `TRANSACTION #${String(transactionNumber).padStart(5, "0")}`,
@@ -263,10 +234,7 @@ async function createTransactionImage({
     170
   );
 
-  // ========================================
   // STATUS
-  // ========================================
-
   ctx.fillStyle = "#1d4a35";
 
   roundRect(
@@ -281,9 +249,7 @@ async function createTransactionImage({
   ctx.fill();
 
   ctx.fillStyle = "#96f5b4";
-
-  ctx.font =
-    "bold 23px Arial";
+  ctx.font = "bold 23px Arial";
 
   ctx.fillText(
     "✓ COMPLETED",
@@ -291,12 +257,8 @@ async function createTransactionImage({
     137
   );
 
-  // ========================================
   // LINIA
-  // ========================================
-
   ctx.strokeStyle = "#373b46";
-
   ctx.lineWidth = 2;
 
   ctx.beginPath();
@@ -313,10 +275,7 @@ async function createTransactionImage({
 
   ctx.stroke();
 
-  // ========================================
   // DANE
-  // ========================================
-
   drawField(
     ctx,
     "BUYER",
@@ -349,10 +308,7 @@ async function createTransactionImage({
     555
   );
 
-  // ========================================
   // DATA
-  // ========================================
-
   const now =
     new Date();
 
@@ -374,10 +330,7 @@ async function createTransactionImage({
     270
   );
 
-  // ========================================
   // ID TRANSAKCJI
-  // ========================================
-
   drawField(
     ctx,
     "TRANSACTION ID",
@@ -386,10 +339,7 @@ async function createTransactionImage({
     365
   );
 
-  // ========================================
   // FOOTER
-  // ========================================
-
   ctx.strokeStyle = "#373b46";
 
   ctx.beginPath();
@@ -407,9 +357,7 @@ async function createTransactionImage({
   ctx.stroke();
 
   ctx.fillStyle = "#8f96a5";
-
-  ctx.font =
-    "22px Arial";
+  ctx.font = "22px Arial";
 
   ctx.fillText(
     "STARSHOP • Secure & Verified",
@@ -418,9 +366,7 @@ async function createTransactionImage({
   );
 
   ctx.fillStyle = "#ffc107";
-
-  ctx.font =
-    "bold 22px Arial";
+  ctx.font = "bold 22px Arial";
 
   ctx.fillText(
     `Transaction #${String(transactionNumber).padStart(5, "0")}`,
@@ -436,7 +382,7 @@ async function createTransactionImage({
 }
 
 // ==========================================
-// BOT READY
+// BOT READY + KOMENDY
 // ==========================================
 
 client.once(
@@ -448,13 +394,22 @@ client.once(
     );
 
     await client.application.commands.set([
+
       {
         name: "vouch",
         description:
           "Wyślij verified vouch"
+      },
+
+      {
+        name: "produkty",
+        description:
+          "Wyświetl listę produktów Star Shop"
       }
+
     ]);
 
+    console.log("✅ Komendy /vouch i /produkty załadowane");
   }
 );
 
@@ -467,29 +422,140 @@ client.on(
   async interaction => {
 
     // ======================================
-    // /VOUCH
+    // KOMENDY
     // ======================================
 
     if (
       interaction.isChatInputCommand()
     ) {
 
+      // ====================================
+      // /PRODUKTY
+      // ====================================
+
+      if (
+        interaction.commandName === "produkty"
+      ) {
+
+        const embed =
+          new EmbedBuilder()
+
+            .setColor("#FFD700")
+
+            .setAuthor({
+              name: "🛒 STAR SHOP"
+            })
+
+            .setTitle(
+              "🛒 STAR SHOP × PRODUKTY"
+            )
+
+            .setDescription(`
+> ✨ **N1TR0**
+> Prezent • Boosty serwera • Dekoracje profilu • Nitro
+
+> 🎬 **STR3AM!NG**
+> Netflix • Spotify • Disney+ • SkyShowtime
+
+> 🔐 **K0NT4**
+> Betclic • NordVPN • MullvadVPN • Inne konta
+
+> 💎 **MET0DY I D0STAWCY**
+> Metody na zarobek • Dostawcy • Tańsze produkty
+
+> 📱 **SOC1AL B00ST**
+> Followy • Subskrypcje • Polubienia • Wyświetlenia
+
+> 👥 **M3MBERS**
+> Boty online/offline • Masowe reakcje • Inne usługi
+
+> 🎮 **GRY I DOŁADOWANIA**
+> Minecraft • Steam • CS2 • Doładowania
+
+> 🎲 **R0BL0X**
+> Robuxy • Przedmioty • GAG2 • Inne
+
+> 🤝 **M1DDLEM4N**
+> Pośrednictwo • Bezpieczne transakcje
+
+> 🤖 **INNE USŁUGI**
+> Serwery • Weryfikacja SMS • Boty Discord
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎁 **SPRAWDŹ SWOJE SZCZĘŚCIE**
+Kliknij przycisk poniżej i zobacz, co możesz wygrać!
+
+💰 **GWARANCJA NAJNIŻSZEJ CENY**
+Nie znalazłeś taniej? Napisz do nas — sprawdzimy!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🛡️ **Star Shop** • Bezpieczne zakupy • Szybka realizacja
+            `)
+
+            .setFooter({
+              text:
+                "Star Shop • Premium Products"
+            });
+
+        // PRZYCISKI
+        const row =
+          new ActionRowBuilder()
+            .addComponents(
+
+              new ButtonBuilder()
+                .setLabel(
+                  "🎁 Sprawdź szczęście"
+                )
+                .setStyle(
+                  ButtonStyle.Link
+                )
+                .setURL(
+                  "https://discord.com/channels/1457543887064399936/1505564158962176010"
+                ),
+
+              new ButtonBuilder()
+                .setLabel(
+                  "💰 Najniższa cena"
+                )
+                .setStyle(
+                  ButtonStyle.Link
+                )
+                .setURL(
+                  "https://discord.com/channels/1457543887064399936/1457543888083488803"
+                )
+
+            );
+
+        return interaction.reply({
+          embeds: [
+            embed
+          ],
+
+          components: [
+            row
+          ]
+        });
+      }
+
+      // ====================================
+      // /VOUCH
+      // ====================================
+
       if (
         interaction.commandName === "vouch"
       ) {
 
-        // Numer transakcji
         const transactionNumber =
           getNextTransactionId();
 
-        // ID transakcji
         const transactionId =
           `${String(transactionNumber).padStart(5, "0")}-${Math.random()
             .toString(36)
             .substring(2, 6)
             .toUpperCase()}`;
 
-        // Dane
         const buyer =
           interaction.user.toString();
 
@@ -502,12 +568,10 @@ client.on(
         const price =
           "31 PLN • BLIK";
 
-        // ==================================
         // GENEROWANIE PNG
-        // ==================================
-
         const image =
           await createTransactionImage({
+
             buyer:
               interaction.user.username,
 
@@ -519,6 +583,7 @@ client.on(
 
             price:
               "31,00 PLN"
+
           });
 
         const attachment =
@@ -530,10 +595,7 @@ client.on(
             }
           );
 
-        // ==================================
         // EMBED
-        // ==================================
-
         const embed =
           new EmbedBuilder()
 
@@ -606,10 +668,7 @@ client.on(
                 "Starshop • Verified Voucher"
             });
 
-        // ==================================
         // PRZYCISK OPINII
-        // ==================================
-
         const row =
           new ActionRowBuilder()
             .addComponents(
@@ -632,11 +691,8 @@ client.on(
 
             );
 
-        // ==================================
-        // WIADOMOŚĆ
-        // ==================================
-
         return interaction.reply({
+
           content:
             "✅ **Transakcja zakończona pomyślnie!**",
 
@@ -651,10 +707,9 @@ client.on(
           files: [
             attachment
           ]
+
         });
-
       }
-
     }
 
     // ======================================
@@ -739,9 +794,7 @@ client.on(
         return interaction.showModal(
           modal
         );
-
       }
-
     }
 
     // ======================================
@@ -769,7 +822,6 @@ client.on(
               "opinion"
             );
 
-        // Sprawdzenie oceny
         const rating =
           Number(stars);
 
@@ -785,10 +837,8 @@ client.on(
 
             ephemeral: true
           });
-
         }
 
-        // Wiadomość, z której otwarto modal
         const message =
           interaction.message;
 
@@ -803,7 +853,6 @@ client.on(
 
             ephemeral: true
           });
-
         }
 
         const old =
@@ -812,14 +861,17 @@ client.on(
           );
 
         old.addFields({
+
           name:
             `⭐ Opinia klienta (${rating}/5)`,
 
           value:
             `> ${opinion}\n\n**Verified Buyer:** ${interaction.user}`
+
         });
 
         await message.edit({
+
           embeds: [
             old
           ],
@@ -828,14 +880,13 @@ client.on(
         });
 
         return interaction.reply({
+
           content:
             "✅ Dziękujemy za opinię!",
 
           ephemeral: true
         });
-
       }
-
     }
 
   }
