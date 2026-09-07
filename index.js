@@ -2,70 +2,58 @@ require("dotenv").config();
 const {
   Client,
   GatewayIntentBits,
+  REST,
+  Routes,
   SlashCommandBuilder,
-  EmbedBuilder,
-  Events
+  PermissionFlagsBits
 } = require("discord.js");
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds]
 });
 
-client.once(Events.ClientReady, async () => {
-  console.log(`✅ ${client.user.tag}`);
+// Rejestracja komendy
+const commands = [
+  new SlashCommandBuilder()
+    .setName("nuke")
+    .setDescription("Usuwa wszystkie kanały na serwerze")
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+].map(cmd => cmd.toJSON());
 
-  const cmd = new SlashCommandBuilder()
-    .setName("embed")
-    .setDescription("Wyślij własny embed")
-    .addStringOption(opt =>
-      opt
-        .setName("tekst")
-        .setDescription("Wklej cały wygląd embeda")
-        .setRequired(true)
+const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
+
+client.once("ready", async () => {
+  console.log(`✅ Zalogowano jako ${client.user.tag}`);
+
+  try {
+    await rest.put(
+      Routes.applicationCommands(process.env.CLIENT_ID),
+      { body: commands }
     );
-
-  await client.application.commands.set([cmd]);
+    console.log("✅ Komenda /nuke zarejestrowana");
+  } catch (err) {
+    console.error(err);
+  }
 });
 
-client.on(Events.InteractionCreate, async interaction => {
+client.on("interactionCreate", async interaction => {
   if (!interaction.isChatInputCommand()) return;
-  if (interaction.commandName !== "embed") return;
-
-  const raw = interaction.options.getString("tekst");
-
-  const lines = raw.split("\n");
-  let title = "";
-  let desc = [];
-
-  for (const line of lines) {
-    if (line.startsWith("# ") && !title) {
-      title = line.replace("# ", "");
-    } else {
-      desc.push(line);
-    }
-  }
-
-  const embed = new EmbedBuilder()
-    .setColor("#EBA714")
-    .setDescription(desc.join("\n"))
-    .setTimestamp();
-
-  if (title) embed.setTitle(title);
-
-  const footerLine = desc.find(x => x.startsWith("- "));
-  if (footerLine) {
-    embed.setFooter({
-      text: footerLine.replace("- ", "")
-    });
-
-    embed.setDescription(
-      desc.filter(x => x !== footerLine).join("\n")
-    );
-  }
+  if (interaction.commandName !== "nuke") return;
 
   await interaction.reply({
-    embeds: [embed]
+    content: "🗑️ Usuwam wszystkie kanały...",
+    ephemeral: true
   });
+
+  const channels = interaction.guild.channels.cache;
+
+  for (const channel of channels.values()) {
+    try {
+      await channel.delete("Masowe czyszczenie kanałów");
+    } catch (e) {
+      console.log(`Nie udało się usunąć ${channel.name}`);
+    }
+  }
 });
 
 client.login(process.env.TOKEN);
